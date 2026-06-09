@@ -1,0 +1,27 @@
+{
+  "title": "四川文化遗产示例数据",
+  "authors": ["Tianfu Digital Humanities Corpus"],
+  "year": 2026,
+  "keywords": ["四川", "文化遗产", "非遗", "古建筑"],
+  "abstract": "示例数据用于测试 JSON parser、实体抽取和知识图谱关系生成。",
+  "items": [
+    {
+      "name": "三星堆",
+      "type": "Heritage",
+      "place": "广汉",
+      "description": "三星堆是古蜀文明的重要遗址，相关研究涉及考古发现、博物馆传播和文化记忆。"
+    },
+    {
+      "name": "川剧",
+      "type": "IntangibleHeritage",
+      "place": "四川",
+      "description": "川剧是四川代表性非遗项目，与地方传播、文化认同和短视频传播研究相关。"
+    },
+    {
+      "name": "杜甫草堂",
+      "type": "Building",
+      "place": "成都",
+      "description": "杜甫草堂是成都重要文化空间，与唐宋文学、城市文化和文化遗产保护相关。"
+    }
+  ]
+}

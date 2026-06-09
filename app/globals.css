@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #05070f;
+  color: #eef4ff;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.mountain-field {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(68, 212, 255, 0.18), transparent 26%),
+    radial-gradient(circle at 78% 12%, rgba(143, 107, 255, 0.18), transparent 30%),
+    linear-gradient(180deg, rgba(8, 10, 23, 0.15), rgba(5, 7, 15, 0.95)),
+    repeating-radial-gradient(ellipse at 50% 80%, rgba(91, 142, 255, 0.12) 0 1px, transparent 1px 18px);
+}
+
+.mountain-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  background:
+    linear-gradient(140deg, transparent 0 24%, rgba(68, 212, 255, 0.22) 24.2%, transparent 24.8%),
+    linear-gradient(154deg, transparent 0 34%, rgba(143, 107, 255, 0.18) 34.2%, transparent 34.7%),
+    linear-gradient(18deg, transparent 0 58%, rgba(43, 230, 183, 0.14) 58.2%, transparent 58.7%);
+  animation: drift 16s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
+  }
+  to {
+    transform: translate3d(1%, 1.5%, 0) scale(1.06);
+  }
+}
+
+.glass {
+  border: 1px solid rgba(172, 197, 255, 0.16);
+  background: rgba(9, 14, 31, 0.68);
+  backdrop-filter: blur(18px);
+}
+
+.leaflet-container {
+  height: 100%;
+  min-height: 560px;
+  width: 100%;
+  background: #05070f;
+}
+
+.leaflet-control-attribution {
+  background: rgba(5, 7, 15, 0.72) !important;
+  color: rgba(238, 244, 255, 0.68) !important;
+}
