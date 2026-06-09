@@ -3,11 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import agents, analytics, atlas, corpus, graph, ingestion, knowledge, literature, map, news, rag, research, search, update_agent
 
-app = FastAPI(title="Tianfu Studies AI Platform API", version="0.1.0")
+app = FastAPI(
+    title="Tianfu Studies AI Platform API",
+    version="0.1.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://tianfuxue.pages.dev",
+        "https://ecb4e54a.tianfuxue.pages.dev",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
