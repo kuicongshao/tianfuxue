@@ -28,10 +28,15 @@ Do not commit `.env`, private documents, paid API keys, model caches, or large r
 ## 3. Cloudflare Pages Frontend
 
 1. Connect the GitHub repository.
-2. Build command: `npm run build`.
-3. Output directory: `.next` for Next.js Pages integration, or deploy through Cloudflare's Next.js adapter if required by your plan.
-4. Environment variables:
+2. Framework preset: Next.js (Static HTML Export).
+3. Production branch: `main`.
+4. Build command: `npm run build`.
+5. Build output directory: `out`.
+6. Root directory: `/`.
+7. Environment variables:
    - `NEXT_PUBLIC_API_BASE_URL=https://your-backend.example.com`
+   - `NEXT_PUBLIC_TIANDITU_TOKEN=...`
+8. Deploy. Do not configure a Next.js adapter, a Vercel build-output directory, Cloudflare Functions, or Wrangler for this frontend.
 
 ## 4. Railway Backend
 
