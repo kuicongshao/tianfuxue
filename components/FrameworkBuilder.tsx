@@ -7,6 +7,7 @@ import { frameworkMermaid } from "@/lib/tianfu-data";
 
 export function FrameworkBuilder() {
   const [idea, setIdea] = useState("三星堆短视频传播");
+  const [generatedFor, setGeneratedFor] = useState<string | null>(null);
 
   return (
     <section id="framework" className="relative z-10 px-5 py-16 md:px-10">
@@ -21,10 +22,11 @@ export function FrameworkBuilder() {
               onChange={(event) => setIdea(event.target.value)}
               className="mt-3 min-h-32 w-full rounded-md border border-white/12 bg-slate-950/70 p-3 text-slate-100 outline-none focus:border-cyanline"
             />
-            <Button className="mt-4">
+            <Button className="mt-4" onClick={() => setGeneratedFor(idea.trim() || "当前研究想法")} disabled={!idea.trim()}>
               <WandSparkles className="h-4 w-4" />
               生成研究设计
             </Button>
+            {generatedFor && <div className="mt-3 rounded-md border border-jade/30 bg-jade/10 p-3 text-sm text-jade" role="status">已生成“{generatedFor}”的研究设计提示：可从右侧框架中依次细化问题、数据与方法。</div>}
             <div className="mt-5 grid gap-3 text-sm">
               {["理论基础：媒介化、文化记忆、地方认同", "核心概念：观看、互动、叙事、认同", "研究问题：短视频如何重构三星堆公共想象", "变量设计：内容类型、情感倾向、互动强度、文化符号", "方法建议：内容分析 + 主题模型 + 情感分析 + 访谈", "数据来源：抖音、B站、微博、博物馆公开资料"].map((text) => (
                 <div key={text} className="rounded-md border border-white/10 bg-white/[0.03] p-3">

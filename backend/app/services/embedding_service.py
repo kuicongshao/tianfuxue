@@ -26,6 +26,8 @@ class EmbeddingService:
         return self.embed_texts([query])[0]
 
     def _embed_with_local(self, texts: list[str]) -> list[list[float]]:
+        if not settings.enable_local_embedding:
+            return [deterministic_embedding(text) for text in texts]
         model = _load_sentence_transformer(self.model_name)
         if model is not None:
             vectors = model.encode(texts, normalize_embeddings=True)

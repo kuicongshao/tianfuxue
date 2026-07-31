@@ -1,7 +1,7 @@
 {
   "type": "FeatureCollection",
-  "name": "Sichuan Province MVP Boundary",
-  "source": "MVP simplified boundary. Replace with DataV_GeoJSON geojson_full/province/510000_full.json for production city/county boundaries.",
+  "name": "Sichuan Province Legacy Research Boundary",
+  "source": "LEGACY / RESEARCH-ONLY. This simplified local boundary is not used in production map rendering. Production maps rely on TianDiTu official base-map administrative information.",
   "features": [
     {
       "type": "Feature",

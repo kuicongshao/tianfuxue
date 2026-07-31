@@ -5,7 +5,7 @@ import re
 from collections import Counter
 from typing import Any
 
-from app.services.embedding_service import EmbeddingService, cosine_similarity
+from app.core.config import settings
 from app.services.ingestion_service import load_store
 
 
@@ -13,7 +13,10 @@ def search(query: str, top_k: int = 5, search_type: str = "hybrid") -> list[dict
     store = load_store()
     items_by_id = {item["id"]: item for item in store["corpus_items"]}
     chunks = store["document_chunks"]
-    if search_type == "keyword":
+    top_k = max(1, min(top_k, settings.rag_max_chunks))
+    if settings.low_resource_mode:
+        scored = _lightweight_hybrid_search(query, chunks) if search_type == "hybrid" else _keyword_search(query, chunks)
+    elif search_type == "keyword":
         scored = _keyword_search(query, chunks)
     elif search_type == "vector":
         scored = _vector_search(query, chunks)
@@ -63,6 +66,8 @@ def _keyword_search(query: str, chunks: list[dict[str, Any]]) -> list[tuple[dict
 
 
 def _vector_search(query: str, chunks: list[dict[str, Any]]) -> list[tuple[dict[str, Any], float]]:
+    from app.services.embedding_service import EmbeddingService, cosine_similarity
+
     service = EmbeddingService()
     query_embedding = service.embed_query(query)
     scored = []
@@ -85,6 +90,18 @@ def _hybrid_search(query: str, chunks: list[dict[str, Any]]) -> list[tuple[dict[
     for chunk, score in vector:
         merged[chunk["id"]] = (chunk, merged.get(chunk["id"], (chunk, 0.0))[1] + score * 0.45)
     return sorted(merged.values(), key=lambda item: item[1], reverse=True)
+
+
+def _lightweight_hybrid_search(query: str, chunks: list[dict[str, Any]]) -> list[tuple[dict[str, Any], float]]:
+    """Keyword retrieval with an exact-phrase boost; safe for small Render instances."""
+    scored = _keyword_search(query, chunks)
+    normalized_query = re.sub(r"\s+", "", query)
+    boosted = []
+    for chunk, score in scored:
+        normalized_text = re.sub(r"\s+", "", chunk["text"])
+        phrase_bonus = 1.0 if normalized_query and normalized_query in normalized_text else 0.0
+        boosted.append((chunk, score + phrase_bonus))
+    return sorted(boosted, key=lambda item: item[1], reverse=True)
 
 
 def _normalize_scores(scored: list[tuple[dict[str, Any], float]]) -> list[tuple[dict[str, Any], float]]:

@@ -36,10 +36,10 @@ export default function Home() {
               面向地方学、历史学、新闻传播、文化遗产与数字人文研究者，构建文献、知识图谱、GIS 舆图、RAG 问答与研究 Agent 一体化工作台。
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button>
+              <a href="#lineage" className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-cyanline px-4 text-sm font-medium text-slate-950 transition hover:bg-[#7ee4ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyanline active:scale-[0.98]">
                 进入平台
                 <ArrowRight className="h-4 w-4" />
-              </Button>
+              </a>
               <a href="/corpus">
                 <Button variant="outline">查看知识库</Button>
               </a>

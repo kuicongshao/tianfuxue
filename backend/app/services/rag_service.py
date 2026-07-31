@@ -6,15 +6,40 @@ from app.core.config import settings
 from app.services.retrieval_service import search
 
 
+def retrieve_context(question: str, top_k: int = 5, search_type: str = "hybrid") -> dict[str, Any]:
+    """Return bounded, low-resource retrieval evidence without generating an answer."""
+    mode = "hybrid-lite" if settings.low_resource_mode and search_type == "hybrid" else search_type
+    retrieved = search(question, top_k=top_k, search_type=search_type)
+    citations = _citations(retrieved)
+    context_parts = []
+    for citation, chunk in zip(citations, retrieved):
+        text = " ".join(chunk["text"].split())[:1200]
+        context_parts.append(f"[{citation['index']}] {chunk['title']}\n{text}")
+    return {
+        "status": "ok" if retrieved else "no_context",
+        "question": question,
+        "requested_mode": search_type,
+        "mode": mode,
+        "citations": citations,
+        "chunks": retrieved,
+        "retrieved_chunks": retrieved,
+        "context": "\n\n".join(context_parts),
+    }
+
+
 def answer_question(question: str, top_k: int = 5, search_type: str = "hybrid") -> dict[str, Any]:
+    mode = "lightweight-hybrid" if settings.low_resource_mode and search_type == "hybrid" else search_type
     retrieved = search(question, top_k=top_k, search_type=search_type)
     if not retrieved:
         return {
-            "answer": "当前知识库中未检索到可靠依据。",
+            "answer": "当前知识库尚未导入足够的相关资料，请先在文献库中导入或精选相关文献。",
             "citations": [],
             "retrieved_chunks": [],
+            "chunks": [],
             "confidence": "low",
             "llm_provider": "fallback",
+            "mode": mode,
+            "status": "no_context",
         }
 
     if settings.allow_external_llm_api:
@@ -28,8 +53,11 @@ def answer_question(question: str, top_k: int = 5, search_type: str = "hybrid") 
         "answer": answer,
         "citations": _citations(retrieved),
         "retrieved_chunks": retrieved,
+        "chunks": retrieved,
         "confidence": "medium" if retrieved[0]["score"] >= 0.35 else "low",
         "llm_provider": provider,
+        "mode": mode,
+        "status": "ok",
     }
 
 

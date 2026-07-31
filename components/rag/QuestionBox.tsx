@@ -10,9 +10,10 @@ type Props = {
   setSearchType: (value: string) => void;
   onAsk: () => void;
   loading: boolean;
+  loadingText?: string | null;
 };
 
-export function QuestionBox({ question, setQuestion, searchType, setSearchType, onAsk, loading }: Props) {
+export function QuestionBox({ question, setQuestion, searchType, setSearchType, onAsk, loading, loadingText }: Props) {
   return (
     <div className="glass rounded-lg p-5">
       <div className="mb-4 flex items-center gap-2 text-lg font-semibold">
@@ -40,6 +41,7 @@ export function QuestionBox({ question, setQuestion, searchType, setSearchType, 
           {loading ? "检索中..." : "提问"}
         </Button>
       </div>
+      {loadingText && <p className="mt-3 text-sm text-cyanline" role="status">{loadingText}</p>}
     </div>
   );
 }

@@ -22,6 +22,7 @@ Do not commit `.env`, private documents, paid API keys, model caches, or large r
 3. Build command: `npm run build`.
 4. Environment variables:
    - `NEXT_PUBLIC_API_BASE_URL=https://your-backend.example.com`
+   - `NEXT_PUBLIC_TIANDITU_TOKEN=...`
 5. Deploy.
 
 ## 3. Cloudflare Pages Frontend
@@ -44,8 +45,12 @@ Do not commit `.env`, private documents, paid API keys, model caches, or large r
    - `EMBEDDING_MODEL=BAAI/bge-m3`
    - `LLM_PROVIDER=fallback`
    - `ENABLE_PAID_API=false`
+   - `LOW_RESOURCE_MODE=true`
+   - `ENABLE_LOCAL_EMBEDDING=false`
+   - `RAG_TIMEOUT_SECONDS=8`
+   - `RAG_MAX_CHUNKS=5`
    - `NEWS_CACHE_WEEKS=12`
-5. Expose port `8000`.
+5. Let Render supply `PORT`; the Dockerfile runs Uvicorn on `${PORT:-10000}`.
 
 ## 5. Render Backend
 
@@ -96,6 +101,9 @@ For production, set it to your deployed backend URL.
 ## 9. Security Defaults
 
 - `ENABLE_PAID_API=false` disables paid model calls even if API keys are present.
+- Keep `LOW_RESOURCE_MODE=true` and `ENABLE_LOCAL_EMBEDDING=false` on small Render instances. This prevents RAG requests from loading or downloading local transformer models.
 - News collection only fetches public pages and RSS feeds.
 - Uploaded files are size-limited and temporary upload files are removed after ingestion.
 - News cache stores metadata only, not raw HTML or full articles.
+- Local AI settings are browser-only and must never be set as Render environment variables. The browser contacts the visitor's localhost directly; Render does not proxy local model requests.
+- Configure `NEXT_PUBLIC_TIANDITU_TOKEN` only in Cloudflare Pages environment variables. The production map uses TianDiTu official WMTS vector and annotation layers; its attribution, copyright, and map-review information must remain visible in the map component. Confirm the current TianDiTu authorization and any required review text before public release.

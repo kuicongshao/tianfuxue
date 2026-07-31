@@ -22,7 +22,7 @@
 - Backend: FastAPI
 - Corpus: local `knowledge_base` + future PostgreSQL persistence
 - Vector DB: PostgreSQL + pgvector
-- Embedding: local `BAAI/bge-m3` by default, deterministic fallback when model dependency is unavailable
+- Embedding: deterministic lightweight embedding by default; local `BAAI/bge-m3` is opt-in for adequately provisioned environments
 - LLM: fallback by default; external API only when `ENABLE_PAID_API=true` and `OPENAI_API_KEY` or `DEEPSEEK_API_KEY` is explicitly configured
 - GIS: Leaflet + Sichuan GeoJSON
 
@@ -76,6 +76,7 @@ cp .env.example .env
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_TIANDITU_TOKEN=
 DATABASE_URL=postgresql+psycopg://tianfu:tianfu@localhost:5432/tianfu
 DATABASE_MODE=json
 EMBEDDING_PROVIDER=local
@@ -85,10 +86,18 @@ OPENAI_API_KEY=
 DEEPSEEK_API_KEY=
 NEWS_CACHE_WEEKS=12
 ENABLE_PAID_API=false
+LOW_RESOURCE_MODE=true
+RAG_TIMEOUT_SECONDS=8
+RAG_MAX_CHUNKS=5
+ENABLE_LOCAL_EMBEDDING=false
 UPLOAD_MAX_MB=25
 ```
 
+GIS 舆图使用 Leaflet 加载国家地理信息公共服务平台“天地图”官方 WMTS 矢量底图（`vec_w`）和矢量注记图层（`cva_w`）。请仅在 Cloudflare Pages 环境变量中配置 `NEXT_PUBLIC_TIANDITU_TOKEN`，不要将真实 Token 写入仓库。生产地图不渲染本地四川行政区 GeoJSON；该文件仅保留为 LEGACY / RESEARCH-ONLY。地图服务来源、版权和审图信息必须保持可见，并应在公开部署前按天地图当前授权要求确认实际展示文字。
+
 默认不调用付费 API。`ENABLE_PAID_API=false` 时，即使配置了 API KEY 也不会调用外部付费模型。
+
+Render 等低资源实例应保持 `LOW_RESOURCE_MODE=true` 与 `ENABLE_LOCAL_EMBEDDING=false`：RAG 会使用关键词和短语增强检索，不会导入 `sentence-transformers` 或下载 BGE-M3。仅在内存充足、模型已预置时才将 `ENABLE_LOCAL_EMBEDDING=true`，并将 `LOW_RESOURCE_MODE=false`。
 
 `DATABASE_MODE=json` 使用本地 JSON store，适合演示和开发。`DATABASE_MODE=postgres` 的 PostgreSQL + pgvector schema 已准备在 `docs/database.sql`，后续可接入 repository adapter。
 
@@ -182,8 +191,16 @@ POST /api/rag/ask
 - `retrieved_chunks`
 - `confidence`
 - `llm_provider`
+- `mode`
+- `status`
 
 如果知识库没有依据，系统返回“当前知识库中未检索到可靠依据”。无 API KEY 时使用 fallback 检索摘要模式。
+
+### 浏览器本地 AI（Ollama / OpenAI Compatible）
+
+研究助手可选直连访问者电脑上的 Ollama、LM Studio、vLLM、llama.cpp server 或 LocalAI。浏览器先向平台请求 `POST /api/rag/retrieve` 获取有限检索上下文，再直接向本地模型生成答案；本地地址、API Key 和对话内容不会上传到平台。未启用或本地模型不可用时，系统自动回退到既有 `POST /api/rag/ask`。
+
+配置仅保存于浏览器 `localStorage`（键名 `tianfu_local_ai_config_v1`），首次打开不会扫描 localhost。Ollama 需允许当前网页来源访问（例如配置 `OLLAMA_ORIGINS`）；LM Studio 需在 Local Server 中启用 CORS。
 
 ## 四川文化新闻周报智能体
 

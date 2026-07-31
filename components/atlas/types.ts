@@ -9,6 +9,7 @@ export type AtlasObject = {
   era?: string;
   lat: number;
   lng: number;
+  coordinate_system?: "gcj02" | "wgs84" | "bd09" | "unknown";
   intro: string;
   keywords: string[];
   region?: string;
@@ -38,6 +39,7 @@ export type Region = {
   name: string;
   lat: number;
   lng: number;
+  coordinate_system?: "gcj02" | "wgs84" | "bd09" | "unknown";
   level: string;
   area_km2: number;
   population_million: number;
